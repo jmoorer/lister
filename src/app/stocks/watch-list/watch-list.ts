@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { SymbolEntry } from '../../finhub';
+import { SymbolEntry } from '../../schemas/finnhub';
 import { SavedSymbol } from '../watchlist-service';
 @Component({
   selector: 'app-watch-list',

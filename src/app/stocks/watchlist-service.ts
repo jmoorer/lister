@@ -1,15 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { createLocalStorageSignal } from '../storage';
 import {
-  FINHUB_CONFIG,
   QuoteResponse,
   quoteResponseSchema,
   SymbolEntry,
   symbolEntrySchema,
   tickerDataMessageSchema,
-} from '../finhub';
+} from '../schemas/finnhub';
 import { HttpClient } from '@angular/common/http';
-import { StockService } from './stock-service';
 import { z } from 'zod';
 
 const savedSymbolSchema = symbolEntrySchema.extend({
@@ -38,12 +36,16 @@ function createSavedSymbol(symbol: SymbolEntry, quote: QuoteResponse): SavedSymb
 export class WatchlistService {
   http = inject(HttpClient);
   watchlist = createLocalStorageSignal('watchlist', [], savedSymbolSchema.array());
-  socket: WebSocket = new WebSocket(`${FINHUB_CONFIG.wsUrl}?token=${FINHUB_CONFIG.token}`);
+  socket: WebSocket | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      this.socket = new WebSocket(`/ws`);
+    }
+  }
 
   getQuote(symbol: string) {
-    return this.http.get<QuoteResponse>(
-      `${FINHUB_CONFIG.baseUrl}/quote?symbol=${symbol}&token=${FINHUB_CONFIG.token}`,
-    );
+    return this.http.get<QuoteResponse>(`/finnhub/quote?symbol=${symbol}`);
   }
   addSymbol(symbol: SymbolEntry) {
     this.getQuote(symbol.symbol).subscribe((quote) => {
@@ -67,17 +69,17 @@ export class WatchlistService {
     });
   }
   subscribeToWatchlist() {
-    this.socket.addEventListener('message', this.handleMessage);
-    this.socket.addEventListener('open', (event) => {
+    this.socket?.addEventListener('message', this.handleMessage);
+    this.socket?.addEventListener('open', (event) => {
       console.log('Socket opened', event);
       this.watchlist().forEach((symbol) => {
-        this.socket.send(JSON.stringify({ type: 'subscribe', symbol: symbol.symbol }));
+        this.socket?.send(JSON.stringify({ type: 'subscribe', symbol: symbol.symbol }));
       });
     });
   }
   unsubscribeFromWatchlist() {
     this.watchlist().forEach((symbol) => {
-      this.socket.send(JSON.stringify({ type: 'unsubscribe', symbol: symbol.symbol }));
+      this.socket?.send(JSON.stringify({ type: 'unsubscribe', symbol: symbol.symbol }));
     });
   }
 

@@ -1,9 +1,4 @@
 import { z } from 'zod';
-export const FINHUB_CONFIG = {
-  token: '',
-  baseUrl: 'https://finnhub.io/api/v1' as const,
-  wsUrl: 'wss://ws.finnhub.io' as const,
-};
 
 export const tickerDataMessageSchema = z.discriminatedUnion('type', [
   z.object({

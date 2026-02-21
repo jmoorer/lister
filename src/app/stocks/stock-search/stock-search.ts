@@ -1,6 +1,6 @@
 import { Component, effect, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SymbolEntry } from '../../finhub';
+import { SymbolEntry } from '../../schemas/finnhub';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, filter } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs';
