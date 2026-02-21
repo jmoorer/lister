@@ -1,0 +1,7 @@
+<div class="h-full grid grid-cols-[350px_1fr]">
+  <app-watch-list [symbolEntries]="symbolEntries()" (onRemoveSymbolEvent)="removeSymbol($event)">
+  </app-watch-list>
+  <div class="overflow-y-auto">
+    <router-outlet />
+  </div>
+</div>

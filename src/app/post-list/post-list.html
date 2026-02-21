@@ -1,0 +1,8 @@
+<div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-full overflow-y-auto">
+  @for (post of posts(); track post.id) {
+    <div class="bg-white p-4 rounded-md" (click)="navigateToPost(post.id)">
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.body }}</p>
+    </div>
+  }
+</div>

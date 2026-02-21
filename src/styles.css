@@ -1,3 +1,36 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-500);
+
+  --color-background-primary: var(--color-gray-50);
+  --color-background-secondary: var(--color-gray-50);
+
+  --color-border-primary: var(--color-gray-200);
+  --color-border-secondary: var(--color-gray-300);
+
+  --color-shadow-primary: var(--color-gray-200);
+  --color-shadow-secondary: var(--color-gray-300);
+}
+
+body {
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+}
+
+.btn {
+  @apply bg-blue-500 text-white rounded-md p-2 cursor-pointer;
+}
+.btn-danger {
+  @apply bg-red-500 text-white rounded-md p-2 cursor-pointer hover:bg-red-600;
+}
+.btn-small {
+  @apply text-sm px-2 py-1;
+}
+
+.input[type='text'] {
+  @apply border border-gray-300 rounded-md p-2;
+}
