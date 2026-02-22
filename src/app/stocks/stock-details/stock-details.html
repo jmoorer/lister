@@ -1,1 +1,136 @@
-<p>stock-details works!</p>
+<!-- <p>stock-details works!</p>
+<p>currentSymbol: {{ currentSymbol() }}</p> -->
+
+@if (stockDetails.hasValue()) {
+  @let details = stockDetails.value();
+  <div class="p-4 space-y-4">
+    <div class="flex flex-row gap-2 items-center">
+      <img [src]="details.profile.logo" [alt]="details.profile.name" class="w-12 h-12" />
+      <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-bold">{{ details.profile.name }}</h1>
+        <div class="flex flex-row gap-1 items-center text-sm text-gray-500">
+          <span class="font-medium">{{ details.profile.ticker }}</span>
+          @if (details.profile.exchange) {
+            <span>/</span>
+            <span class="text-gray-500">{{ details.profile.exchange }}</span>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 items-center">
+      <p class="text-4xl font-bold">${{ details.quote.price }}</p>
+
+      @let increase = details.quote.change && details.quote.change > 0;
+      <div
+        [class.text-green-500]="increase"
+        [class.text-red-500]="!increase"
+        class="flex flex-row gap-1 items-center text-sm"
+      >
+        @if (details.quote.change != 0) {
+          <span>
+            @if (increase) {
+              &uarr;
+            } @else {
+              &darr;
+            }
+          </span>
+        }
+        <span class="text-xl">{{ details.quote.change }}</span>
+        <span class="text-xl">({{ details.quote.changePercent.toFixed(2) }}%)</span>
+      </div>
+    </div>
+    <div class="p-4 space-y-2">
+      <h2 class="text-lg font-bold">Company Overview</h2>
+      <div class="grid grid-cols-2 gap-2 border border-border-primary p-4 rounded-md">
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">Industry</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">{{ details.profile.finnhubIndustry }}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">Country</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">{{ details.profile.country }}</p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">IPO Date</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">{{ details.profile.ipo }}</p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">Website</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <a [href]="details.profile.weburl" target="_blank" class="text-sm text-blue-500">
+            {{ details.profile.weburl }}
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 space-y-2">
+      <h2 class="text-lg font-bold">Stock Statistics</h2>
+      <div class="grid grid-cols-2 gap-2 border border-border-primary p-4 rounded-md">
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">Price</p>
+          <p class="text-sm text-gray-500">${{ details.quote.price }}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-sm text-gray-500">High</p>
+          <p class="text-sm text-gray-500">${{ details.quote.high }}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">Low</p>
+            <p class="text-sm text-gray-500">${{ details.quote.low }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    @if (details.news.length > 0) {
+      <div class="p-4">
+        <h2 class="text-lg font-bold">Latest News</h2>
+        <div class="flex flex-col gap-2">
+          @for (news of details.news; track news.id) {
+            <a
+              [href]="news.url"
+              target="_blank"
+              class="flex flex-row gap-2 border border-border-primary p-3 rounded-md"
+            >
+              @if (news.image) {
+                <img
+                  [src]="news.image"
+                  [alt]="news.headline"
+                  class="w-12 h-12 rounded-md object-cover"
+                />
+              } @else {
+                <div class="w-12 h-12 rounded-md bg-gray-200"></div>
+              }
+              <div class="flex flex-col gap-1">
+                <h3 class="text-lg font-bold">{{ news.headline }}</h3>
+                <p class="text-sm text-gray-500">{{ news.summary }}</p>
+                <p class="text-sm text-gray-500">
+                  <span class="text-gray-500">
+                    {{ news.source }}
+                  </span>
+                  <span class="text-gray-500"> &bull; </span>
+                  <span class="text-gray-500">
+                    {{ news.datetime * 1000 | date: 'medium' }}
+                  </span>
+                </p>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+} @else if (stockDetails.isLoading()) {
+  <div>Loading...</div>
+} @else if (stockDetails.error()) {
+  <div>{{ stockDetails.error() }}</div>
+}

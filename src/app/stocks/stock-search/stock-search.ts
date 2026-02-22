@@ -27,7 +27,6 @@ export class StockSearch {
     { initialValue: '' },
   );
 
-  // 3. The resource automatically fetches when debouncedTerm changes
   searchResults = this.stockService.lookupSymbol(this.debouncedTerm);
 
   log() {

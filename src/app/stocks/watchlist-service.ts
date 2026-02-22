@@ -9,6 +9,7 @@ import {
 } from '../schemas/finnhub';
 import { HttpClient } from '@angular/common/http';
 import { z } from 'zod';
+import { StockService } from './stock-service';
 
 const savedSymbolSchema = symbolEntrySchema.extend({
   quote: z.object({
@@ -34,7 +35,7 @@ function createSavedSymbol(symbol: SymbolEntry, quote: QuoteResponse): SavedSymb
   providedIn: 'root',
 })
 export class WatchlistService {
-  http = inject(HttpClient);
+  stockService = inject(StockService);
   watchlist = createLocalStorageSignal('watchlist', [], savedSymbolSchema.array());
   socket: WebSocket | null = null;
 
@@ -44,11 +45,8 @@ export class WatchlistService {
     }
   }
 
-  getQuote(symbol: string) {
-    return this.http.get<QuoteResponse>(`/finnhub/quote?symbol=${symbol}`);
-  }
   addSymbol(symbol: SymbolEntry) {
-    this.getQuote(symbol.symbol).subscribe((quote) => {
+    this.stockService.getQuote(symbol.symbol).subscribe((quote) => {
       this.watchlist.update((symbols) => {
         return symbols
           .filter((s) => s.symbol !== symbol.symbol)
@@ -61,7 +59,7 @@ export class WatchlistService {
   }
   refreshQuotes() {
     this.watchlist().forEach((symbol) => {
-      this.getQuote(symbol.symbol).subscribe((quote) => {
+      this.stockService.getQuote(symbol.symbol).subscribe((quote) => {
         this.watchlist.update((symbols) =>
           symbols.map((s) => (s.symbol === symbol.symbol ? createSavedSymbol(s, quote) : s)),
         );

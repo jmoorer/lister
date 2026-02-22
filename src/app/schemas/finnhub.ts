@@ -58,3 +58,36 @@ export const marketStatusSchema = z.object({
 });
 
 export type MarketStatus = z.infer<typeof marketStatusSchema>;
+
+export const newsSchema = z.object({
+  category: z.string(),
+  datetime: z.number(),
+  headline: z.string(),
+  id: z.number(),
+  image: z.string().nullable(),
+  related: z.string().nullable(),
+  source: z.string(),
+  summary: z.string(),
+  url: z.string(),
+});
+
+export type News = z.infer<typeof newsSchema>;
+export const newsResponseSchema = newsSchema.array();
+export type NewsResponse = z.infer<typeof newsResponseSchema>;
+
+export const companyProfileSchema = z.object({
+  country: z.string(),
+  currency: z.string(),
+  exchange: z.string(),
+  finnhubIndustry: z.string(),
+  ipo: z.string(),
+  logo: z.string(),
+  marketCapitalization: z.number(),
+  name: z.string(),
+  phone: z.string(),
+  shareOutstanding: z.number(),
+  ticker: z.string(),
+  weburl: z.string(),
+});
+
+export type CompanyProfile = z.infer<typeof companyProfileSchema>;
