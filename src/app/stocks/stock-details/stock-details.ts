@@ -1,9 +1,10 @@
-import { Component, computed, inject, resource } from '@angular/core';
+import { Component, computed, effect, inject, resource } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StockService } from '../stock-service';
 import { forkJoin, map, shareReplay } from 'rxjs';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { WatchlistService } from '../watchlist-service';
 
 //format date to YYYY-MM-DD
 export function formatDate(date: Date): string {
@@ -11,19 +12,26 @@ export function formatDate(date: Date): string {
 }
 @Component({
   selector: 'app-stock-details',
-  imports: [DatePipe],
+  imports: [DatePipe, CurrencyPipe],
   templateUrl: './stock-details.html',
   styleUrl: './stock-details.css',
 })
 export class StockDetails {
   private activatedRoute = inject(ActivatedRoute);
   stockService = inject(StockService);
+  watchlistService = inject(WatchlistService);
   routeParams = toSignal(this.activatedRoute.params);
   currentSymbol = computed<string>(() => this.routeParams()?.['symbol'] ?? '');
 
   constructor() {
     this.activatedRoute.params.subscribe((params) => {
       console.log('pageparams', params['symbol']);
+    });
+    effect(() => {
+      if (this.stockDetails.hasValue()) {
+        console.log('New data:', this.stockDetails.value());
+        this.watchlistService.updateSymbol(this.currentSymbol(), this.stockDetails.value().quote);
+      }
     });
   }
 

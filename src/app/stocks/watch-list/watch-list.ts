@@ -13,19 +13,10 @@ export class WatchList {
   onRemoveSymbolEvent = output<string>();
   router = inject(Router);
 
-  private activatedRoute = inject(ActivatedRoute);
-  currentSymbol = computed(() => this.activatedRoute.snapshot.params['symbol']);
-
-  constructor() {
-    this.activatedRoute.params.subscribe((params) => {
-      console.log('params', params['symbol']);
-    });
+  ngOnInit() {
+    console.log('init watch list 3');
   }
-  ngOnInit() {}
   onRemoveSymbol(symbol: string) {
     this.onRemoveSymbolEvent.emit(symbol);
-  }
-  navigateToSymbol(symbol: string) {
-    this.router.navigate(['symbol', symbol]);
   }
 }

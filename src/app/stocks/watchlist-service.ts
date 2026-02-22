@@ -44,6 +44,11 @@ export class WatchlistService {
       this.socket = new WebSocket(`/ws`);
     }
   }
+  updateSymbol(symbol: string, quote: SavedSymbol['quote']) {
+    this.watchlist.update((symbols) =>
+      symbols.map((s) => (s.symbol === symbol ? { ...s, quote } : s)),
+    );
+  }
 
   addSymbol(symbol: SymbolEntry) {
     this.stockService.getQuote(symbol.symbol).subscribe((quote) => {

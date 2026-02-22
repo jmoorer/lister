@@ -3,7 +3,7 @@
 
 @if (stockDetails.hasValue()) {
   @let details = stockDetails.value();
-  <div class="p-4 space-y-4">
+  <div class="p-4 space-y-4 max-w-3xl">
     <div class="flex flex-row gap-2 items-center">
       <img [src]="details.profile.logo" [alt]="details.profile.name" class="w-12 h-12" />
       <div class="flex flex-col gap-1">
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="flex flex-row gap-2 items-center">
-      <p class="text-4xl font-bold">${{ details.quote.price }}</p>
+      <p class="text-4xl font-bold">{{ details.quote.price | currency }}</p>
 
       @let increase = details.quote.change && details.quote.change > 0;
       <div
@@ -74,20 +74,30 @@
     </div>
     <div class="p-4 space-y-2">
       <h2 class="text-lg font-bold">Stock Statistics</h2>
-      <div class="grid grid-cols-2 gap-2 border border-border-primary p-4 rounded-md">
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">Price</p>
-          <p class="text-sm text-gray-500">${{ details.quote.price }}</p>
+      <div class="grid grid-cols-2 gap-4 border border-border-primary p-4 rounded-md">
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500">Open</p>
+          <p class="text-sm font-bold">{{ details.quote.open | currency }}</p>
         </div>
-        <div class="flex flex-col gap-1">
+        <div class="flex justify-between">
           <p class="text-sm text-gray-500">High</p>
-          <p class="text-sm text-gray-500">${{ details.quote.high }}</p>
+          <p class="text-sm font-bold">{{ details.quote.high | currency }}</p>
         </div>
-        <div class="flex flex-col gap-1">
-          <div class="flex flex-col gap-1">
-            <p class="text-sm text-gray-500">Low</p>
-            <p class="text-sm text-gray-500">${{ details.quote.low }}</p>
-          </div>
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500">Low</p>
+          <p class="text-sm font-bold">{{ details.quote.low | currency }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500">Previous Close</p>
+          <p class="text-sm font-bold">{{ details.quote.previousClose | currency }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500">Market Capitalization</p>
+          <p class="text-sm font-bold">{{ details.profile.marketCapitalization | currency }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500">Shares Outstanding</p>
+          <p class="text-sm font-bold">{{ details.profile.shareOutstanding | currency }}</p>
         </div>
       </div>
     </div>
