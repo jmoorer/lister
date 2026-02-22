@@ -14,6 +14,7 @@ import {
 import { HttpClient, httpResource } from '@angular/common/http';
 import { forkJoin, map, shareReplay } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { isEmptyObject } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +48,11 @@ export class StockService {
   getCompanyProfile(symbol: string) {
     return this.http
       .get<CompanyProfile>(`/finnhub/stock/profile2?symbol=${symbol}`)
-      .pipe(map((profile) => companyProfileSchema.parse(profile)));
+      .pipe(
+        map((profile) =>
+          isEmptyObject(profile) ? undefined : companyProfileSchema.parse(profile),
+        ),
+      );
   }
   getQuote(symbol: string) {
     return this.http

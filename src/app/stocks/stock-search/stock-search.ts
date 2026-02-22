@@ -7,6 +7,7 @@ import { distinctUntilChanged } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StockService } from '../stock-service';
 import { WatchlistService } from '../watchlist-service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-stock-search',
   imports: [FormsModule],
@@ -17,6 +18,7 @@ export class StockSearch {
   searchQuery = signal<string>('');
   stockService = inject(StockService);
   watchlistService = inject(WatchlistService);
+  router = inject(Router);
 
   debouncedTerm = toSignal(
     toObservable(this.searchQuery).pipe(
@@ -29,12 +31,9 @@ export class StockSearch {
 
   searchResults = this.stockService.lookupSymbol(this.debouncedTerm);
 
-  log() {
-    console.log('log');
-  }
-
   addSymbol(symbol: SymbolEntry) {
     console.log('addSymbol', symbol);
+    this.router.navigate(['/symbol', symbol.symbol]);
     this.watchlistService.addSymbol(symbol);
     this.searchQuery.set('');
   }

@@ -2,6 +2,10 @@
   <app-watch-list [symbolEntries]="symbolEntries()" (onRemoveSymbolEvent)="removeSymbol($event)">
   </app-watch-list>
   <div class="overflow-y-auto">
-    <router-outlet />
+    @if (isHomeRoute()) {
+      <app-overview />
+    } @else {
+      <router-outlet />
+    }
   </div>
 </div>

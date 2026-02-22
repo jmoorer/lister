@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, resource } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { StockService } from '../stock-service';
 import { forkJoin, map, shareReplay } from 'rxjs';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
@@ -12,7 +12,7 @@ export function formatDate(date: Date): string {
 }
 @Component({
   selector: 'app-stock-details',
-  imports: [DatePipe, CurrencyPipe],
+  imports: [DatePipe, CurrencyPipe, RouterLink],
   templateUrl: './stock-details.html',
   styleUrl: './stock-details.css',
 })
@@ -35,7 +35,6 @@ export class StockDetails {
     });
   }
 
-  marketStatus = this.stockService.getMarketStatus();
   stockDetails = rxResource({
     params: () => ({ symbol: this.currentSymbol() }),
     stream: ({ params }) => {

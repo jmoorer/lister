@@ -10,6 +10,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { join } from 'node:path';
 import type { Request, Response, NextFunction } from 'express';
 import { Socket } from 'net';
+import { QuoteResponse } from './app/schemas/finnhub';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -39,19 +40,45 @@ const wsProxyMiddleware = createProxyMiddleware<Request, Response>({
     'X-Finnhub-Token': process.env['FINNHUB_API_KEY'] || '',
   },
 });
+
+const finnhubFetcher = async <T>(path: string): Promise<T> => {
+  return fetch(`https://finnhub.io/api/v1${path}`, {
+    headers: {
+      'X-Finnhub-Token': process.env['FINNHUB_API_KEY'] || '',
+    },
+  }).then((response) => response.json());
+};
+// Market symbols for the overview
+const MARKET_SYMBOLS = [
+  { symbol: 'SPY', name: 'S&P 500', description: 'SPDR S&P 500 ETF' },
+  { symbol: 'QQQ', name: 'Nasdaq 100', description: 'Invesco QQQ Trust' },
+  { symbol: 'DIA', name: 'Dow Jones', description: 'SPDR Dow Jones ETF' },
+  { symbol: 'IWM', name: 'Russell 2000', description: 'iShares Russell 2000' },
+];
+app.get('/api/overview', async (req, res) => {
+  const symbols = await Promise.all(
+    MARKET_SYMBOLS.map(async (symbol) => {
+      const quote = await finnhubFetcher<QuoteResponse>(`/quote?symbol=${symbol.symbol}`);
+      return {
+        symbol: symbol.symbol,
+        name: symbol.name,
+        description: symbol.description,
+        quote: {
+          price: quote.c,
+          change: quote.d,
+          changePercent: quote.dp,
+        },
+      };
+    }),
+  );
+  res.json({
+    symbols,
+  });
+});
+
 app.use('/finnhub', proxyMiddleware);
+
 app.use('/ws', wsProxyMiddleware);
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
 
 /**
  * Serve static files from /browser

@@ -1,24 +1,25 @@
 <div class="flex flex-col w-[350px] border-r border-gray-300 h-full">
-  <div class="p-4 border-b border-gray-300">
+  <div class="px-4 py-2 border-b border-gray-300">
     <h3 class="text-xl font-semibold">Watchlist</h3>
   </div>
 
   <div class="flex flex-col divide-y divide-gray-300 overflow-y-auto max-h-[calc(100vh-150px)]">
     @if (symbolEntries().length === 0) {
       <div class="flex flex-col gap-2 p-2 text-gray-500">
-        <span>No symbols added</span>
+        <span> Search for a stock and click to add it to your watchlist. </span>
       </div>
     } @else {
       @for (symbol of symbolEntries(); track symbol.symbol) {
-        <a
-          class="flex flex-row gap-2 p-2 group items-center hover:bg-gray-100 cursor-pointer"
-          [routerLink]="['/symbol', symbol.symbol]"
+        <div
+          class="flex flex-row gap-2 px-4 py-2 group items-center hover:bg-gray-100 cursor-pointer"
           [routerLinkActive]="['border-l-4', 'border-l-blue-500', 'hover:bg-blue-100']"
         >
-          <div class="flex flex-col gap-2 flex-1">
-            <span class="font-bold">{{ symbol.symbol }}</span>
-            <span class="text-sm text-gray-500">{{ symbol.description }}</span>
-          </div>
+          <a [routerLink]="['/symbol', symbol.symbol]" class="flex-1">
+            <div class="flex flex-col gap-2 flex-1">
+              <span class="font-bold">{{ symbol.symbol }}</span>
+              <span class="text-sm text-gray-500">{{ symbol.description }}</span>
+            </div>
+          </a>
 
           @if (symbol.quote) {
             @let increase = symbol.quote.change && symbol.quote.change > 0;
@@ -44,11 +45,11 @@
           <div class="text-sm text-gray-500 block group-hover:hidden">{{ symbol.quote?.changePercent ?? 0 }}%</div> -->
           <button
             class="btn-small btn btn-danger hidden group-hover:block"
-            (click)="onRemoveSymbol(symbol.symbol)"
+            (click)="onRemoveSymbol($event, symbol.symbol)"
           >
             Remove
           </button>
-        </a>
+        </div>
       }
     }
   </div>

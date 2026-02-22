@@ -1,0 +1,48 @@
+<div class="p-4 max-w-3xl mx-auto h-full flex flex-col justify-center items-center space-y-4">
+  <div class="flex flex-col gap-2 text-center justify-center">
+    <div class="flex items-center justify-center w-full"></div>
+
+    <h3 class="text-2xl font-bold">Market Overview</h3>
+    <span class="text-sm text-gray-500">
+      Select a stock from your watchlist or search to view details
+    </span>
+  </div>
+  @if (marketOverview.hasValue()) {
+    @let symbols = marketOverview.value().symbols;
+    <div class="grid grid-cols-2 gap-4 w-full">
+      @for (symbol of symbols; track symbol.symbol) {
+        <button
+          class="flex text-left flex-col gap-2 border border-border-primary p-4 rounded-md hover:bg-gray-100 cursor-pointer hover:border-blue-500"
+          (click)="
+            onSelectSymbol({
+              symbol: symbol.symbol,
+              displaySymbol: symbol.symbol,
+              description: symbol.description,
+              type: '',
+            })
+          "
+        >
+          <span class="">{{ symbol.name }}</span>
+          <span class="text-sm text-gray-500">{{ symbol.description }}</span>
+          <div class="flex flex-row gap-2 items-center justify-between">
+            <span class="text-xl font-bold">{{ symbol.quote.price | currency }}</span>
+            @let increase = symbol.quote.change && symbol.quote.change > 0;
+            <div [class.text-green-500]="increase" [class.text-red-500]="!increase" class="text-sm">
+              @if (symbol.quote.change != 0) {
+                <span>
+                  @if (increase) {
+                    &uarr;
+                  } @else {
+                    &darr;
+                  }
+                </span>
+              }
+              <span class="">{{ symbol.quote.change }}</span>
+              <span class="">({{ symbol.quote.changePercent.toFixed(2) }}%)</span>
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

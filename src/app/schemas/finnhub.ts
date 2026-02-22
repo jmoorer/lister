@@ -91,3 +91,20 @@ export const companyProfileSchema = z.object({
 });
 
 export type CompanyProfile = z.infer<typeof companyProfileSchema>;
+
+export const marketOverviewSchema = z.object({
+  symbols: z.array(
+    z.object({
+      symbol: z.string(),
+      name: z.string(),
+      description: z.string(),
+      quote: z.object({
+        price: z.number(),
+        change: z.number(),
+        changePercent: z.number(),
+      }),
+    }),
+  ),
+});
+
+export type MarketOverview = z.infer<typeof marketOverviewSchema>;

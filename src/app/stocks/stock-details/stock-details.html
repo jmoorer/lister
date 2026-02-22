@@ -3,16 +3,27 @@
 
 @if (stockDetails.hasValue()) {
   @let details = stockDetails.value();
+  @let symbol = currentSymbol();
   <div class="p-4 space-y-4 max-w-3xl">
     <div class="flex flex-row gap-2 items-center">
-      <img [src]="details.profile.logo" [alt]="details.profile.name" class="w-12 h-12" />
+      @if (details.profile?.logo) {
+        <img
+          [src]="details.profile?.logo"
+          [alt]="details.profile?.name"
+          class="w-12 h-12 rounded-md"
+        />
+      } @else {
+        <div class="w-12 h-12 rounded-md bg-gray-200 flex items-center justify-center">
+          <span class="text-sm text-gray-500">{{ symbol.substring(0, 2).toUpperCase() }}</span>
+        </div>
+      }
       <div class="flex flex-col gap-1">
-        <h1 class="text-2xl font-bold">{{ details.profile.name }}</h1>
+        <h1 class="text-2xl font-bold">{{ details.profile?.name ?? symbol }}</h1>
         <div class="flex flex-row gap-1 items-center text-sm text-gray-500">
-          <span class="font-medium">{{ details.profile.ticker }}</span>
-          @if (details.profile.exchange) {
+          <span class="font-medium">{{ details.profile?.ticker }}</span>
+          @if (details.profile?.exchange) {
             <span>/</span>
-            <span class="text-gray-500">{{ details.profile.exchange }}</span>
+            <span class="text-gray-500">{{ details.profile?.exchange }}</span>
           }
         </div>
       </div>
@@ -39,40 +50,42 @@
         <span class="text-xl">({{ details.quote.changePercent.toFixed(2) }}%)</span>
       </div>
     </div>
-    <div class="p-4 space-y-2">
-      <h2 class="text-lg font-bold">Company Overview</h2>
-      <div class="grid grid-cols-2 gap-2 border border-border-primary p-4 rounded-md">
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">Industry</p>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">{{ details.profile.finnhubIndustry }}</p>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">Country</p>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">{{ details.profile.country }}</p>
-        </div>
+    @if (details.profile) {
+      <div class="space-y-2">
+        <h2 class="text-lg font-bold">Company Overview</h2>
+        <div class="grid grid-cols-2 gap-2 border border-border-primary p-4 rounded-md">
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">Industry</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">{{ details.profile.finnhubIndustry }}</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">Country</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">{{ details.profile.country }}</p>
+          </div>
 
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">IPO Date</p>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">{{ details.profile.ipo }}</p>
-        </div>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">IPO Date</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">{{ details.profile.ipo }}</p>
+          </div>
 
-        <div class="flex flex-col gap-1">
-          <p class="text-sm text-gray-500">Website</p>
-        </div>
-        <div class="flex flex-col gap-1">
-          <a [href]="details.profile.weburl" target="_blank" class="text-sm text-blue-500">
-            {{ details.profile.weburl }}
-          </a>
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-gray-500">Website</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <a [href]="details.profile.weburl" target="_blank" class="text-sm text-blue-500">
+              {{ details.profile.weburl }}
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="p-4 space-y-2">
+    }
+    <div class="space-y-2">
       <h2 class="text-lg font-bold">Stock Statistics</h2>
       <div class="grid grid-cols-2 gap-4 border border-border-primary p-4 rounded-md">
         <div class="flex justify-between">
@@ -91,18 +104,20 @@
           <p class="text-sm text-gray-500">Previous Close</p>
           <p class="text-sm font-bold">{{ details.quote.previousClose | currency }}</p>
         </div>
-        <div class="flex justify-between">
-          <p class="text-sm text-gray-500">Market Capitalization</p>
-          <p class="text-sm font-bold">{{ details.profile.marketCapitalization | currency }}</p>
-        </div>
-        <div class="flex justify-between">
-          <p class="text-sm text-gray-500">Shares Outstanding</p>
-          <p class="text-sm font-bold">{{ details.profile.shareOutstanding | currency }}</p>
-        </div>
+        @if (details.profile) {
+          <div class="flex justify-between">
+            <p class="text-sm text-gray-500">Market Capitalization</p>
+            <p class="text-sm font-bold">{{ details.profile.marketCapitalization | currency }}</p>
+          </div>
+          <div class="flex justify-between">
+            <p class="text-sm text-gray-500">Shares Outstanding</p>
+            <p class="text-sm font-bold">{{ details.profile.shareOutstanding | currency }}</p>
+          </div>
+        }
       </div>
     </div>
     @if (details.news.length > 0) {
-      <div class="p-4">
+      <div class="">
         <h2 class="text-lg font-bold">Latest News</h2>
         <div class="flex flex-col gap-2">
           @for (news of details.news; track news.id) {
@@ -140,7 +155,13 @@
     }
   </div>
 } @else if (stockDetails.isLoading()) {
-  <div>Loading...</div>
+  <div class="flex justify-center items-center h-full">Loading...</div>
 } @else if (stockDetails.error()) {
-  <div>{{ stockDetails.error() }}</div>
+  <div class="flex flex-col gap-2 justify-center items-center h-full">
+    <p class="text-gray-500">
+      <span class="font-bold"> Error loading stock details for </span>
+      <span class="font-bold">{{ currentSymbol() }}</span>
+    </p>
+    <a [routerLink]="['/']" class="text-blue-500">Back to overview</a>
+  </div>
 }

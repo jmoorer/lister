@@ -16,7 +16,8 @@ export class WatchList {
   ngOnInit() {
     console.log('init watch list 3');
   }
-  onRemoveSymbol(symbol: string) {
+  onRemoveSymbol(event: MouseEvent, symbol: string) {
+    event.stopPropagation();
     this.onRemoveSymbolEvent.emit(symbol);
   }
 }
