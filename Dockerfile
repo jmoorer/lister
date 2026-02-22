@@ -1,16 +1,30 @@
-# Build stage
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
+# STAGE 1: Build
+FROM node:22-alpine AS build
 
-# Production stage
-FROM node:20-alpine AS production
 WORKDIR /app
-# Use non-root user for security
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
-COPY --from=builder /app /app
-USER nodejs
-EXPOSE 8080
+
+# Install dependencies first (better caching)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and build the application
+COPY . .
+RUN npm run build
+
+# STAGE 2: Run
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# Copy only the necessary build artifacts from the build stage
+# Angular 20 output structure: dist/<project-name>/[browser|server]
+COPY --from=build /app/dist ./dist
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=4000
+
+# The server entry point in Angular 20 is typically server.mjs
+# Replace <your-project-name> with the name from your angular.json
+EXPOSE 4000
 CMD ["node", "dist/lister/server/server.mjs"]
